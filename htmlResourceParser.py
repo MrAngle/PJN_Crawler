@@ -1,6 +1,5 @@
 from slugify import slugify, Slugify, UniqueSlugify, slugify_unicode
 
-
 import requests
 from lxml import html
 from enum import Enum
@@ -16,17 +15,20 @@ Przykladowe strony
 class PageResource:
     HEADERS = 0
     PARAGRAPHS = 1
-    LINKS = 2
-    DIVS = 3
+    DIVS = 2
 
-    def __init__(self, pageName):
+    def __init__(self, pageName, dictionaryType):
+        self.DICTIONARY = dictionaryType
         self.setHtmlContent(pageName)
+        # do weryfikowania działania slownika
+        self.fileIncorrectWords = open("incorrectWords", "w")
+        self.fileCorrectWords = open("correctWords", "w")
         headers = self.getHeaders()
         paragraphs = self.getParagraphs()
-        links = self.getLinks()
         divs = self.getTextInDivs()
 
-        self.data = [headers, paragraphs, links, divs]
+        self.data = [headers, paragraphs, divs]
+        self.links = self.getLinks()
 
     def setHtmlContent(self, pageName):
         self.htmlContent = self.getHtmlContent(pageName)
@@ -55,18 +57,35 @@ class PageResource:
         return self.splitTextToWords(self.htmlContent.xpath('//div/text()'))
 
     '''
-        slugify_unicode - usuwa wszystkie znaki specjalne. Tryb unicode nie usuwa znaków charakterystycznych dla języka (po prostu polskich znaków)
-        separator=' '   - normalnie usuwane są tez spacje, separator pozwala na oddzielenie wyrazow
-        [0].split()         - dzieli zdanie/stringa/text na pojedyncze slowa
+        slugify_unicode                                 - usuwa wszystkie znaki specjalne. Tryb unicode nie usuwa znaków charakterystycznych dla języka (po prostu polskich znaków)
+        separator=' '                                   - normalnie usuwane są tez spacje, separator pozwala na oddzielenie wyrazow
+        [0].split()                                     - dzieli zdanie/stringa/text na pojedyncze slowa
+        ''.join([i for i in text if not i.isdigit()])   - usuwa wszystkie liczby
         '''
+
     def splitTextToWords(self, list):
+
         stringList = []
         try:
             for text in list:
+                text = ''.join([i for i in text if not i.isdigit()])
                 for word in [slugify_unicode(text, separator=' ')][0].split():
-                    stringList.append(word)
+                    # jesli slowo znajduje sie w slowniku zostaje dodane do listy
+                    if self.checkWordInDict(word):
+                        stringList.append(word)
         except:
             print("COS NIE TAK W FUNKCJI splitTextToWords ============================================================")
 
         return stringList
 
+    def checkWordInDict(self, word):
+        # wszystkie slowa ktore teoretycznie nie znajduja sie w slowniku zostaja zapisane w pliku incorrectWords"
+        if not self.DICTIONARY.check(word):
+            self.fileIncorrectWords.write("{}\n".format(word))
+            return False
+        return True
+
+    def saveWordsToFile(self):
+        for text in self.data:
+            for word in text:
+                self.fileCorrectWords.write("{}\n".format(word))
