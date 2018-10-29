@@ -1,0 +1,32 @@
+wpisujemy linki
+
+
+chodzenie po stronach
+
+interesuje nas srodek strony - artykuł
+
+nie wazna jaka strona
+
+zbudować własny korpus ktory bedzie miał 100mb, lub więcej
+
+sciągamy cała stronę żeby ją parsować
+
+crawler - sprawdz
+
+ma sprawdzac czy dana strona została już pobrana (sprawdzanie linku, lub sprawdzanie czy dany tekst jest w pliku)
+
+tekst trzymac w plikach tekstowych
+
+w pliku tekstowym ma sie znalezc jeden text
+
+
+2.
+
+Wykonanie testów statystycznych
+
+- zrobienie wykresu kołowego (jakie słowa najczęsciej występują)
+- wykres w układzie kartezjańskim (pokazane było w jaki sposób przyrasta słów - bierzemy strumien tekstu i dodajemy nowe slowa, jesli się powtarzają to okreslamy czy sie powtarza)
+- wykres pokrycia tekstu(
+
+
+1. Parser
