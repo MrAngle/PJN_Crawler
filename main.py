@@ -1,8 +1,9 @@
-from slugify import slugify, Slugify, UniqueSlugify, slugify_unicode
-from slugify import slugify_ru
 
+from enum import Enum
 
 import enchant
+
+
 
 from htmlResourceParser import *
 
@@ -11,16 +12,24 @@ DICTIONARY = enchant.Dict("pl")
 #print(DICTIONARY.check("dobrej"))
 
 tree = PageResource(STARTING_PAGE)
-# tree = getHtmlContent(STARTING_PAGE)
-# paragraphs = getParagraphs(tree)
-# links = getLinks(tree)
+print("PARAGRAPHS === Liczba elementow (PARAGRAPHS) {}".format(len(tree.data[PageResource.PARAGRAPHS])))
+print(tree.data[PageResource.PARAGRAPHS])
+print("\n")
 
-'''
-slugify_unicode - usuwa wszystkie znaki specjalne. Tryb unicode nie usuwa znaków charakterystycznych dla języka (po prostu polskich znaków)
-separator=' '   - normalnie usuwane są tez spacje, separator pozwala na oddzielenie wyrazow
-[0].split()         - dzieli zdanie/stringa/text na pojedyncze slowa
-'''
-#stringList = [slugify_unicode(paragraphs[0], separator=' ')][0].split()
+print("HEADERS === Liczba elementow (HEADERS) {}".format(len(tree.data[PageResource.HEADERS])))
+print(tree.data[PageResource.HEADERS])
+print("\n")
+
+print("LINKS === Liczba elementow (LINKS) {}".format(len(tree.data[PageResource.LINKS])))
+print(tree.data[PageResource.LINKS])
+print("\n")
+
+print("DIVS === Liczba elementow (DIVS) {}".format(len(tree.data[PageResource.DIVS])))
+print(tree.data[PageResource.DIVS])
+print("\n")
+
+
+
 
 
 #print(stringList)
