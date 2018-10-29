@@ -1,5 +1,6 @@
 import requests
 from lxml import html
+from enum import Enum
 
 '''
 Przykladowe strony 
@@ -9,28 +10,41 @@ Przykladowe strony
 '''
 
 
-# zwraca "brudny" kod html
-def getHtmlContent(pageName):
-    # page = requests.get('http://econpy.pythonanywhere.com/ex/001.html')
-    page = requests.get(pageName)
-    return html.fromstring(page.content)
+class PageResource:
+    class DataType(Enum):
+        HEADERS = 0
+        PARAGRAPHS = 1
+        LINKS = 2
 
+    def __init__(self, pageName):
+        self.setHtmlContent(pageName)
+        headers = self.getHeaders()
+        paragraphs = self.getParagraphs()
+        links = self.getLinks()
 
-# zwraca linki
-def getLinks(htmlContent):
-    return htmlContent.xpath('//@href')
+        self.data = [headers, paragraphs, links]
 
+    def setHtmlContent(self, pageName):
+        self.htmlContent = self.getHtmlContent(pageName)
 
-# zwraca paragrafy
-def getParagraphs(htmlContent):
-    return htmlContent.xpath('//p/text()')
+    # zwraca "brudny" kod html
+    def getHtmlContent(self, pageName):
+        # page = requests.get('http://econpy.pythonanywhere.com/ex/001.html')
+        page = requests.get(pageName)
+        return html.fromstring(page.content)
 
+    # zwraca linki
+    def getLinks(self):
+        return self.htmlContent.xpath('//@href')
 
-# zwraca headery
-def getHeaders(htmlContent):
-    return htmlContent.xpath('//p/text()')
+    # zwraca paragrafy
+    def getParagraphs(self):
+        return self.htmlContent.xpath('//p/text()')
 
+    # zwraca headery
+    def getHeaders(self):
+        return self.htmlContent.xpath('//p/text()')
 
-# zwraca divy
-def getTextInDivs(htmlContent):
-    return htmlContent.xpath('//div/text()')
+    # zwraca divy
+    def getTextInDivs(self):
+        return self.htmlContent.xpath('//div/text()')
