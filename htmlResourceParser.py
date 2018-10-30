@@ -2,14 +2,8 @@ from slugify import slugify, Slugify, UniqueSlugify, slugify_unicode
 
 import requests
 from lxml import html
-from enum import Enum
-
-'''
-Przykladowe strony 
-'http://riad.pk.edu.pl/~bialas/'
-'http://econpy.pythonanywhere.com/ex/001.html'
-'https://opinie.wp.pl/kampania-samorzadowa-wchodzi-w-krytyczna-faze-jaroslaw-kaczynski-ma-przeblyski-szczerosci-6311166497413249a'
-'''
+from Configuration import *
+import os
 
 
 class PageResource:
@@ -21,14 +15,40 @@ class PageResource:
         self.DICTIONARY = dictionaryType
         self.setHtmlContent(pageName)
         # do weryfikowania działania slownika
-        self.fileIncorrectWords = open("incorrectWords", "w")
-        self.fileCorrectWords = open("correctWords", "w")
+        self.fileIncorrectWords = None
+        self.fileCorrectWords = None
+        self.prepareFilesAndDir(slugify(pageName, separator='_'))
+
+
         headers = self.getHeaders()
         paragraphs = self.getParagraphs()
         divs = self.getTextInDivs()
 
         self.data = [headers, paragraphs, divs]
         self.links = self.getLinks()
+
+    def prepareFilesAndDir(self, pageName):
+        try:
+            file_path = "{}\\{}\\".format(PATH_FOR_FILES,pageName)
+            directory = os.path.dirname(file_path)
+            if not os.path.exists(directory):
+                # print("dziala")
+                os.makedirs(directory)
+
+            #TODO: w pozniejszym etapie usunac "WRITE", bo bedziemy wyciagac slowa z plikow
+
+            self.fileIncorrectWords = open("{}\\{}\\incorrectWords.txt".format(PATH_FOR_FILES,pageName), "w")
+            self.fileIncorrectWords.write(
+                "++++++++++++++++++ SLOWA KTORE NIE ZOSTALY ZNALEZIONE W SLOWNIKU ++++++++++++++++++ "
+                "\nLINK DO STRONY : {}\n\n\n".format(pageName))
+
+            self.fileCorrectWords = open("{}\\{}\\correctWords.txt".format(PATH_FOR_FILES,pageName), "w")
+            self.fileCorrectWords.write(
+                "++++++++++++++++++ SLOWA KTORE ZOSTALY ZNALEZIONE W SLOWNIKU ++++++++++++++++++ "
+                "\nLINK DO STRONY : {}\n\n\n".format(pageName))
+
+        except:
+            print("COS NIE TAK W FUNKCJI prepareFilesAndDir ==========================================================")
 
     def setHtmlContent(self, pageName):
         self.htmlContent = self.getHtmlContent(pageName)
@@ -61,8 +81,7 @@ class PageResource:
         separator=' '                                   - normalnie usuwane są tez spacje, separator pozwala na oddzielenie wyrazow
         [0].split()                                     - dzieli zdanie/stringa/text na pojedyncze slowa
         ''.join([i for i in text if not i.isdigit()])   - usuwa wszystkie liczby
-        '''
-
+    '''
     def splitTextToWords(self, list):
 
         stringList = []

@@ -1,14 +1,9 @@
 
-from enum import Enum
-
-import enchant
-
-
+from Configuration import *
 
 from htmlResourceParser import *
 
-STARTING_PAGE = 'https://opinie.wp.pl/kampania-samorzadowa-wchodzi-w-krytyczna-faze-jaroslaw-kaczynski-ma-przeblyski-szczerosci-6311166497413249a'
-DICTIONARY = enchant.Dict("pl")
+
 
 
 tree = PageResource(STARTING_PAGE, DICTIONARY)
