@@ -1,6 +1,5 @@
 
 from Configuration import *
-
 from htmlResourceParser import *
 
 
