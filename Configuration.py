@@ -7,6 +7,7 @@ Przykladowe strony
 'http://econpy.pythonanywhere.com/ex/001.html'
 'https://opinie.wp.pl/kampania-samorzadowa-wchodzi-w-krytyczna-faze-jaroslaw-kaczynski-ma-przeblyski-szczerosci-6311166497413249a'
 https://stackoverflow.com/questions/12851791/removing-numbers-from-string
+https://www.awilczynski.me/pl/
 '''
 
 #STRONA Z KTOREJ SA POBIERANE SLOWA
@@ -14,6 +15,12 @@ STARTING_PAGE = 'https://opinie.wp.pl/kampania-samorzadowa-wchodzi-w-krytyczna-f
 
 #UZYWANY SLOWNIK
 DICTIONARY = enchant.Dict("pl")
+
+#MAKSYMALNA LICZBA LINKOW W LISCIE
+MAX_NUMBER_OF_LINKS = 10000
+
+#MAKSYMALNA LICZBA PRZESZUKANYCH STRON
+MAX_NUMBER_OF_PAGES = 10
 
 '''
 Powinny sie tworzyc foldery o nazwie strony z ktorej pobierane sa slowa

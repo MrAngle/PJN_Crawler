@@ -10,6 +10,7 @@ class PageResource:
     HEADERS = 0
     PARAGRAPHS = 1
     DIVS = 2
+    SPANS = 3
 
     def __init__(self, pageName, dictionaryType):
         self.DICTIONARY = dictionaryType
@@ -23,8 +24,9 @@ class PageResource:
         headers = self.getHeaders()
         paragraphs = self.getParagraphs()
         divs = self.getTextInDivs()
+        spans = self.getTextInSpans()
 
-        self.data = [headers, paragraphs, divs]
+        self.data = [headers, paragraphs, divs, spans]
         self.links = self.getLinks()
 
     def prepareFilesAndDir(self, pageName):
@@ -56,25 +58,32 @@ class PageResource:
     # zwraca "brudny" kod html
     def getHtmlContent(self, pageName):
         # page = requests.get('http://econpy.pythonanywhere.com/ex/001.html')
+
         page = requests.get(pageName)
+        #x = HtmlXPathSelector(page)
         return html.fromstring(page.content)
 
     # zwraca linki
     def getLinks(self):
-        return self.htmlContent.xpath('//@href')
+        links = self.htmlContent.xpath('//@href')
+        return [x for x in links if x.startswith('http')] # zwraca linki tylko te ktore zaczynają sie od http
+
 
     # zwraca paragrafy
     def getParagraphs(self):
-
         return self.splitTextToWords(self.htmlContent.xpath('//p/text()'))
 
     # zwraca headery
     def getHeaders(self):
-        return self.splitTextToWords(self.htmlContent.xpath('//h1/text()'))
+        return self.splitTextToWords(self.htmlContent.xpath("//h/text()"))
 
     # zwraca divy
     def getTextInDivs(self):
         return self.splitTextToWords(self.htmlContent.xpath('//div/text()'))
+
+    # zwraca spany
+    def getTextInSpans(self):
+        return self.splitTextToWords(self.htmlContent.xpath('//span/text()'))
 
     '''
         slugify_unicode                                 - usuwa wszystkie znaki specjalne. Tryb unicode nie usuwa znaków charakterystycznych dla języka (po prostu polskich znaków)
