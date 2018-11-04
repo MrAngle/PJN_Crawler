@@ -13,21 +13,39 @@ class PageResource:
     SPANS = 3
 
     def __init__(self, pageName, dictionaryType):
-        self.DICTIONARY = dictionaryType
-        self.setHtmlContent(pageName)
-        # do weryfikowania działania slownika
-        self.fileIncorrectWords = None
-        self.fileCorrectWords = None
-        self.prepareFilesAndDir(slugify(pageName, separator='_'))
+
+        self.contentIsOk = True
+        self.fileExist = False
+        self.links = []
+        try:
+            self.setHtmlContent(pageName)
+            self.links = list(set(self.getLinks()))
+        except:
+            print("cos nie tak w wyciaganiu kontentu")
+            self.contentIsOk = False
+
+        if self.contentIsOk:
+            try:
+                self.DICTIONARY = dictionaryType
+                #self.setHtmlContent(pageName)
+                # do weryfikowania działania slownika
+                self.fileIncorrectWords = None
+                self.fileCorrectWords = None
+                self.fileExist = self.prepareFilesAndDir(slugify(pageName, separator='_'))
+                #self.links = list(set(self.getLinks()))
+
+                if not self.fileExist:
+                    headers = self.getHeaders()
+                    paragraphs = self.getParagraphs()
+                    divs = self.getTextInDivs()
+                    spans = self.getTextInSpans()
+
+                    self.data = [headers, paragraphs, divs, spans]
+            except:
+                print("COS NIE TAK W FUNKCJI __INIT__ ==========================================================")
+                self.links = True
 
 
-        headers = self.getHeaders()
-        paragraphs = self.getParagraphs()
-        divs = self.getTextInDivs()
-        spans = self.getTextInSpans()
-
-        self.data = [headers, paragraphs, divs, spans]
-        self.links = self.getLinks()
 
     def prepareFilesAndDir(self, pageName):
         try:
@@ -37,20 +55,22 @@ class PageResource:
                 # print("dziala")
                 os.makedirs(directory)
 
-            #TODO: w pozniejszym etapie usunac "WRITE", bo bedziemy wyciagac slowa z plikow
+                #TODO: w pozniejszym etapie usunac "WRITE", bo bedziemy wyciagac slowa z plikow
 
-            self.fileIncorrectWords = open("{}\\{}\\incorrectWords.txt".format(PATH_FOR_FILES,pageName), "w")
-            self.fileIncorrectWords.write(
-                "++++++++++++++++++ SLOWA KTORE NIE ZOSTALY ZNALEZIONE W SLOWNIKU ++++++++++++++++++ "
-                "\nLINK DO STRONY : {}\n\n\n".format(pageName))
+                self.fileIncorrectWords = open("{}\\{}\\incorrectWords.txt".format(PATH_FOR_FILES,pageName), "w")
+                # self.fileIncorrectWords.write(
+                #     "++++++++++++++++++ SLOWA KTORE NIE ZOSTALY ZNALEZIONE W SLOWNIKU ++++++++++++++++++ "
+                #     "\nLINK DO STRONY : {}\n\n\n".format(pageName))
 
-            self.fileCorrectWords = open("{}\\{}\\correctWords.txt".format(PATH_FOR_FILES,pageName), "w")
-            self.fileCorrectWords.write(
-                "++++++++++++++++++ SLOWA KTORE ZOSTALY ZNALEZIONE W SLOWNIKU ++++++++++++++++++ "
-                "\nLINK DO STRONY : {}\n\n\n".format(pageName))
+                self.fileCorrectWords = open("{}\\{}\\correctWords.txt".format(PATH_FOR_FILES,pageName), "w")
+                # self.fileCorrectWords.write(
+                #     "++++++++++++++++++ SLOWA KTORE ZOSTALY ZNALEZIONE W SLOWNIKU ++++++++++++++++++ "
+                #     "\nLINK DO STRONY : {}\n\n\n".format(pageName))
+                return False
 
         except:
             print("COS NIE TAK W FUNKCJI prepareFilesAndDir ==========================================================")
+        return True
 
     def setHtmlContent(self, pageName):
         self.htmlContent = self.getHtmlContent(pageName)
@@ -103,6 +123,7 @@ class PageResource:
                         stringList.append(word)
         except:
             print("COS NIE TAK W FUNKCJI splitTextToWords ============================================================")
+            self.contentIsOk = False
 
         return stringList
 
@@ -114,6 +135,10 @@ class PageResource:
         return True
 
     def saveWordsToFile(self):
-        for text in self.data:
-            for word in text:
-                self.fileCorrectWords.write("{}\n".format(word))
+        try:
+            for text in self.data:
+                for word in text:
+                    self.fileCorrectWords.write("{}\n".format(word))
+        except:
+            print("COS NIE TAK W FUNKCJI saveWordsToFile ============================================================")
+            self.contentIsOk = False

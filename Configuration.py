@@ -17,10 +17,10 @@ STARTING_PAGE = 'https://opinie.wp.pl/kampania-samorzadowa-wchodzi-w-krytyczna-f
 DICTIONARY = enchant.Dict("pl")
 
 #MAKSYMALNA LICZBA LINKOW W LISCIE
-MAX_NUMBER_OF_LINKS = 10000
+MAX_NUMBER_OF_LINKS = 1000000
 
 #MAKSYMALNA LICZBA PRZESZUKANYCH STRON
-MAX_NUMBER_OF_PAGES = 10
+MAX_NUMBER_OF_PAGES = 10000
 
 '''
 Powinny sie tworzyc foldery o nazwie strony z ktorej pobierane sa slowa

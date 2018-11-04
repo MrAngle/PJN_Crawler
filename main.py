@@ -2,64 +2,111 @@ import random
 from Configuration import *
 from htmlResourceParser import *
 
-#TODO links = [STARTING_PAGE]
+# TODO links = [STARTING_PAGE]
 
-#TODO: for nextLink in links
+# TODO: for nextLink in links
 
-links = [STARTING_PAGE]
 
 # a = [0, 2, 22]
 # b = [0, 1, 33]
 # c = [0, 1, 44]
-# b.extend(a)
-# b = list(set(b))
+# c.extend(a)
+# print(c)
+# c = list(set(c))
+# d = ["aa", "aak", "maki", "aa"]
+# b.pop(0)
+# d.remove("aa")
+# print(c)
+# #b = list(set(b))
 # print(b)
+# # print(b)
 #
 # del b[3:len(b)]
 # print(b)
 
-def keepMaxNumberOfLinks(links):
-    listCount = len(links)
+
+
+
+
+def keepMaxNumberOfLinks(linksM):
+    listCount = len(linksM)
+
     if listCount > MAX_NUMBER_OF_LINKS:
-        del links[MAX_NUMBER_OF_LINKS:listCount]
+        toDelete = MAX_NUMBER_OF_LINKS - listCount
+        del linksM[0:toDelete]
+
+    return linksM
 
 
 
+def main():
+    links = [STARTING_PAGE]
+    print(len(links))
 
-for x in range(0, MAX_NUMBER_OF_PAGES):
+    #random.randint(0,len(links))
 
-    tree = PageResource(links[random.randint(0,len(links))], DICTIONARY) # losowa wartosc zeby nie szlo zawsze ta sama sciezka
-    print("PARAGRAPHS === Liczba elementow (PARAGRAPHS) {}".format(len(tree.data[PageResource.PARAGRAPHS])))
-    print(tree.data[PageResource.PARAGRAPHS])
-    print("\n")
+    for x in range(0, MAX_NUMBER_OF_PAGES):
 
-    print("HEADERS === Liczba elementow (HEADERS) {}".format(len(tree.data[PageResource.HEADERS])))
-    print(tree.data[PageResource.HEADERS])
-    print("\n")
+        randomNumber = random.randint(0,len(links))
+        try:
+            print("{}. zaczynam od {}".format(x,links[randomNumber]) )
+        except:
+            print("Dziwny znak przy stronki")
 
-    print("LINKS === Liczba elementow (LINKS) {}".format(len(tree.links)))
-    print(tree.links)
-    print("\n")
+        tree = PageResource(links[randomNumber-1], DICTIONARY)  # losowa wartosc zeby nie szlo zawsze ta sama sciezka
 
-    print("DIVS === Liczba elementow (DIVS) {}".format(len(tree.data[PageResource.DIVS])))
-    print(tree.data[PageResource.DIVS])
-    print("\n")
+        if not tree.fileExist and tree.contentIsOk == True:
+            # print("PARAGRAPHS === Liczba elementow (PARAGRAPHS) {}".format(len(tree.data[PageResource.PARAGRAPHS])))
+            # print(tree.data[PageResource.PARAGRAPHS])
+            # print("\n")
+            #
+            # print("HEADERS === Liczba elementow (HEADERS) {}".format(len(tree.data[PageResource.HEADERS])))
+            # print(tree.data[PageResource.HEADERS])
+            # print("\n")
+            #
+            # print("LINKS === Liczba elementow (LINKS) {}".format(len(tree.links)))
+            # print(tree.links)
+            # print("\n")
+            #
+            # print("DIVS === Liczba elementow (DIVS) {}".format(len(tree.data[PageResource.DIVS])))
+            # print(tree.data[PageResource.DIVS])
+            # print("\n")
+            #
+            # print("SPANS === Liczba elementow (SPANS) {}".format(len(tree.data[PageResource.SPANS])))
+            # print(tree.data[PageResource.SPANS])
+            # print("\n")
+            try:
+                tree.saveWordsToFile()  # save results in files
+            except:
+                print("nie udalo sie zapisac do pliku")
 
-    print("SPANS === Liczba elementow (SPANS) {}".format(len(tree.data[PageResource.SPANS])))
-    print(tree.data[PageResource.SPANS])
-    print("\n")
-
-    tree.saveWordsToFile()      # save results in files
-
-    links.extend(tree.links)    # add new links to list
-    links = list(set(links))    # remove duplicate from list
-    links.pop(0)
-    keepMaxNumberOfLinks(links) # keep maximum number of links in list
-
-#TODO: DODAC ZABEZPIECZENIE PRZED POBIERANIEM DANYCH Z TEJ SAMEJ STRONY (NP. plik w ktorym bedzie lista uzytych stron)
-
-#TODO: Fajnie by bylo dodac pare watkow
+        else:
+            try:
+                print(slugify(links[randomNumber], separator='_') + " juz istnieje")
+            except:
+                print("Dziwny znak przy stronki")
 
 
+        #print("przed ")
+        #print(links)
+        #print(tree.links)
+        if tree.links and tree.contentIsOk == True:
+            links.extend(tree.links)  # add new links to list
+        links = list(set(links))  # remove duplicate from list
 
-#print(stringList)
+        #print("po ")
+        #print(links)
+
+        #print(links)
+        links = keepMaxNumberOfLinks(links)  # keep maximum number of links in list
+        links.remove(links[randomNumber])
+
+
+main()
+
+# TODO: DODAC ZABEZPIECZENIE PRZED POBIERANIEM DANYCH Z TEJ SAMEJ STRONY (NP. plik w ktorym bedzie lista uzytych stron)
+
+# TODO: Fajnie by bylo dodac pare watkow
+
+
+# print(stringList)
