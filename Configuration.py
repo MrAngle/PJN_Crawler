@@ -11,10 +11,12 @@ https://www.awilczynski.me/pl/
 https://www.gry-online.pl/
 https://www.interia.pl/
 https://www.focus.pl/artykuly
+https://www.interia.pl/
+https://cyfrowaekonomia.pl/tokenizacja-token-czego-sluzy/
 '''
 
 #STRONA Z KTOREJ SA POBIERANE SLOWA
-STARTING_PAGE = 'https://cyfrowaekonomia.pl/tokenizacja-token-czego-sluzy/'
+STARTING_PAGE = 'https://www.interia.pl/'
 
 #UZYWANY SLOWNIK
 DICTIONARY = enchant.Dict("pl")

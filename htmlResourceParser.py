@@ -104,9 +104,9 @@ class PageResource:
 
     # zwraca paragrafy
     def getParagraphs(self):
-        print(self.htmlContent.xpath('//p/text()/text()'))
+        #print(self.htmlContent.xpath('//p/text()'))
         if not self.RAW_MODE:
-            return self.splitTextToWords(self.htmlContent.xpath('//p/text()>text()'))
+            return self.splitTextToWords(self.htmlContent.xpath('//p/text()'))
         else:
             return self.htmlContent.xpath('//p/text()')
 

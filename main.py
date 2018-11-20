@@ -97,12 +97,12 @@ def main():
 
 
 
-#main()
+main()
 
-node = etree.fromstring("""<content>
-Text outside tag <div>Text <em>inside</em> tag</div>
-</content>""")
-stringify_children(node)
+# node = etree.fromstring("""<content>
+# Text outside tag <div>Text <em>inside</em> tag</div>
+# </content>""")
+# stringify_children(node)
 
 # TODO: DODAC ZABEZPIECZENIE PRZED POBIERANIEM DANYCH Z TEJ SAMEJ STRONY (NP. plik w ktorym bedzie lista uzytych stron)
 
