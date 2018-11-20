@@ -2,6 +2,9 @@ import random
 from Configuration import *
 from htmlResourceParser import *
 
+from lxml import etree
+
+
 # TODO links = [STARTING_PAGE]
 
 # TODO: for nextLink in links
@@ -25,9 +28,6 @@ from htmlResourceParser import *
 # print(b)
 
 
-
-
-
 def keepMaxNumberOfLinks(linksM):
     listCount = len(linksM)
 
@@ -38,22 +38,21 @@ def keepMaxNumberOfLinks(linksM):
     return linksM
 
 
-
 def main():
     links = [STARTING_PAGE]
     print(len(links))
 
-    #random.randint(0,len(links))
+    # random.randint(0,len(links))
 
     for x in range(0, MAX_NUMBER_OF_PAGES):
 
-        randomNumber = random.randint(0,len(links))
+        randomNumber = random.randint(0, len(links)-1)
         try:
-            print("{}. zaczynam od {}".format(x,links[randomNumber]) )
+            print("RANDOM: {},  {}. zaczynam od {}".format(randomNumber, x, links[randomNumber]))
         except:
             print("Dziwny znak przy stronki")
 
-        tree = PageResource(links[randomNumber-1], DICTIONARY)  # losowa wartosc zeby nie szlo zawsze ta sama sciezka
+        tree = PageResource(links[randomNumber], DICTIONARY)  # losowa wartosc zeby nie szlo zawsze ta sama sciezka
 
         if not tree.fileExist and tree.contentIsOk == True:
             # print("PARAGRAPHS === Liczba elementow (PARAGRAPHS) {}".format(len(tree.data[PageResource.PARAGRAPHS])))
@@ -87,22 +86,23 @@ def main():
                 print("Dziwny znak przy stronki")
 
 
-        #print("przed ")
-        #print(links)
-        #print(tree.links)
         if tree.links and tree.contentIsOk == True:
             links.extend(tree.links)  # add new links to list
         links = list(set(links))  # remove duplicate from list
 
-        #print("po ")
-        #print(links)
-
-        #print(links)
-        links = keepMaxNumberOfLinks(links)  # keep maximum number of links in list
         links.remove(links[randomNumber])
+        links = keepMaxNumberOfLinks(links)  # keep maximum number of links in list
 
 
-main()
+
+
+
+#main()
+
+node = etree.fromstring("""<content>
+Text outside tag <div>Text <em>inside</em> tag</div>
+</content>""")
+stringify_children(node)
 
 # TODO: DODAC ZABEZPIECZENIE PRZED POBIERANIEM DANYCH Z TEJ SAMEJ STRONY (NP. plik w ktorym bedzie lista uzytych stron)
 

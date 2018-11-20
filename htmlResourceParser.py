@@ -5,15 +5,23 @@ from lxml import html
 from Configuration import *
 import os
 
+from bs4 import BeautifulSoup
+
 
 class PageResource:
-    HEADERS = 0
-    PARAGRAPHS = 1
-    DIVS = 2
-    SPANS = 3
+    # HEADERS = 0
+    # PARAGRAPHS = 1
+    # DIVS = 2
+    # SPANS = 3
+
+    # okresla czy artykuł ma być parsowany, czy wyciągany "surowy"
+    RAW_MODE = True;
+
+    # okresla czy ma się pojawic plik "incorrect"
+    SAVE_INCORRECT_WORD_TO_FILE = False;
 
     def __init__(self, pageName, dictionaryType):
-
+        self.rawPageName = pageName
         self.contentIsOk = True
         self.fileExist = False
         self.links = []
@@ -31,7 +39,9 @@ class PageResource:
                 # do weryfikowania działania slownika
                 self.fileIncorrectWords = None
                 self.fileCorrectWords = None
+                self.fileLink = None
                 self.fileExist = self.prepareFilesAndDir(slugify(pageName, separator='_'))
+                #self.fileExist = self.prepareFilesAndDir(pageName)
                 #self.links = list(set(self.getLinks()))
 
                 if not self.fileExist:
@@ -40,7 +50,8 @@ class PageResource:
                     divs = self.getTextInDivs()
                     spans = self.getTextInSpans()
 
-                    self.data = [headers, paragraphs, divs, spans]
+                    #self.data = [headers, paragraphs, divs, spans]
+                    self.data = [paragraphs]
             except:
                 print("COS NIE TAK W FUNKCJI __INIT__ ==========================================================")
                 self.links = True
@@ -56,16 +67,18 @@ class PageResource:
                 os.makedirs(directory)
 
                 #TODO: w pozniejszym etapie usunac "WRITE", bo bedziemy wyciagac slowa z plikow
-
-                self.fileIncorrectWords = open("{}\\{}\\incorrectWords.txt".format(PATH_FOR_FILES,pageName), "w")
-                # self.fileIncorrectWords.write(
-                #     "++++++++++++++++++ SLOWA KTORE NIE ZOSTALY ZNALEZIONE W SLOWNIKU ++++++++++++++++++ "
-                #     "\nLINK DO STRONY : {}\n\n\n".format(pageName))
+                if self.SAVE_INCORRECT_WORD_TO_FILE:
+                    self.fileIncorrectWords = open("{}\\{}\\incorrectWords.txt".format(PATH_FOR_FILES,pageName), "w")
+                    # self.fileIncorrectWords.write(
+                    #     "++++++++++++++++++ SLOWA KTORE NIE ZOSTALY ZNALEZIONE W SLOWNIKU ++++++++++++++++++ "
+                    #     "\nLINK DO STRONY : {}\n\n\n".format(pageName))
 
                 self.fileCorrectWords = open("{}\\{}\\correctWords.txt".format(PATH_FOR_FILES,pageName), "w")
                 # self.fileCorrectWords.write(
                 #     "++++++++++++++++++ SLOWA KTORE ZOSTALY ZNALEZIONE W SLOWNIKU ++++++++++++++++++ "
                 #     "\nLINK DO STRONY : {}\n\n\n".format(pageName))
+
+                self.fileLink = open("{}\\{}\\link.txt".format(PATH_FOR_FILES,pageName), "w")
                 return False
 
         except:
@@ -91,11 +104,15 @@ class PageResource:
 
     # zwraca paragrafy
     def getParagraphs(self):
-        return self.splitTextToWords(self.htmlContent.xpath('//p/text()'))
+        print(self.htmlContent.xpath('//p/text()/text()'))
+        if not self.RAW_MODE:
+            return self.splitTextToWords(self.htmlContent.xpath('//p/text()>text()'))
+        else:
+            return self.htmlContent.xpath('//p/text()')
 
     # zwraca headery
     def getHeaders(self):
-        return self.splitTextToWords(self.htmlContent.xpath("//h/text()"))
+        return self.splitTextToWords(self.htmlContent.xpath("//h1/text()"))
 
     # zwraca divy
     def getTextInDivs(self):
@@ -112,6 +129,7 @@ class PageResource:
         ''.join([i for i in text if not i.isdigit()])   - usuwa wszystkie liczby
     '''
     def splitTextToWords(self, list):
+
 
         stringList = []
         try:
@@ -130,7 +148,8 @@ class PageResource:
     def checkWordInDict(self, word):
         # wszystkie slowa ktore teoretycznie nie znajduja sie w slowniku zostaja zapisane w pliku incorrectWords"
         if not self.DICTIONARY.check(word):
-            self.fileIncorrectWords.write("{}\n".format(word))
+            if self.SAVE_INCORRECT_WORD_TO_FILE:
+                self.fileIncorrectWords.write("{}\n".format(word))
             return False
         return True
 
@@ -139,6 +158,20 @@ class PageResource:
             for text in self.data:
                 for word in text:
                     self.fileCorrectWords.write("{}\n".format(word))
+
+            self.fileLink.write("{}\n".format(self.rawPageName))
         except:
             print("COS NIE TAK W FUNKCJI saveWordsToFile ============================================================")
             self.contentIsOk = False
+            return
+
+
+    def __del__(self):
+        #print("kasuje sie")
+        try:
+            if self.SAVE_INCORRECT_WORD_TO_FILE:
+                self.fileIncorrectWords.close()
+            self.fileCorrectWords.close()
+            self.fileLink.close()
+        except:
+            print("problem przy zamykaniu pliku")
